@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>יצירת הודעה מותאמת אישית</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f5f5;
+      direction: rtl;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card {
+      margin-bottom: 20px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .card-header {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+
+    .output {
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 4px;
+      min-height: 50px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">הכנס פרטים</div>
+      <div class="form-group">
+        <label for="customerName">שם הלקוח</label>
+        <input type="text" id="customerName" placeholder="הכנס שם הלקוח">
+      </div>
+      <div class="form-group">
+        <label for="companyName">שם החברה</label>
+        <input type="text" id="companyName" placeholder="הכנס שם החברה">
+      </div>
+      <div class="form-group">
+        <label for="courseName">שם הלומדה (אופציונלי)</label>
+        <input type="text" id="courseName" placeholder="הכנס שם הלומדה">
+      </div>
+      <div class="form-group">
+        <label for="timeOfDay">בחר זמן ביום</label>
+        <select id="timeOfDay">
+          <option value="בוקר">בוקר</option>
+          <option value="צהריים">צהריים</option>
+          <option value="אחר הצהריים">אחר הצהריים</option>
+        </select>
+      </div>
+      <button id="generateMessage" disabled>צור הודעה</button>
+    </div>
+    <div class="card">
+      <div class="card-header">ההודעה שנוצרה</div>
+      <div id="outputMessage" class="output">ההודעה תופיע כאן...</div>
+      <button id="copyMessage" disabled>העתק הודעה</button>
+    </div>
+  </div>
+
+  <script>
+    const customerNameInput = document.getElementById('customerName');
+    const companyNameInput = document.getElementById('companyName');
+    const courseNameInput = document.getElementById('courseName');
+    const timeOfDaySelect = document.getElementById('timeOfDay');
+    const generateMessageButton = document.getElementById('generateMessage');
+    const outputMessageDiv = document.getElementById('outputMessage');
+    const copyMessageButton = document.getElementById('copyMessage');
+
+    // Enable the "Generate Message" button when both customer name and company name are filled
+    function updateGenerateButtonState() {
+      generateMessageButton.disabled = !customerNameInput.value || !companyNameInput.value;
+    }
+
+    customerNameInput.addEventListener('input', updateGenerateButtonState);
+    companyNameInput.addEventListener('input', updateGenerateButtonState);
+
+    // Generate the custom message
+    generateMessageButton.addEventListener('click', () => {
+      const customerName = customerNameInput.value.trim();
+      const companyName = companyNameInput.value.trim();
+      const courseName = courseNameInput.value.trim() || 'לומדות';
+      const timeOfDay = timeOfDaySelect.value;
+
+      const greeting = {
+        'בוקר': 'בוקר טוב',
+        'צהריים': 'צהריים טובים',
+        'אחר הצהריים': 'אחר צהריים טובים'
+      }[timeOfDay] || 'שלום';
+
+      const timeText = timeOfDay === 'אחר הצהריים' ? 'מחר' : 'היום';
+      const message = `היי ${customerName} ${greeting},
+אשמח לדעת אם ${timeText} מתאים לך לשוחח לגבי נושא ה${courseName} עבור ${companyName}, במידה וכן, אשמח לדעת באיזה שעה מתאים לך שאתקשר?`;
+
+      outputMessageDiv.textContent = message;
+      copyMessageButton.disabled = false;
+    });
+
+    // Copy the message to the clipboard
+    copyMessageButton.addEventListener('click', () => {
+      const message = outputMessageDiv.textContent;
+      navigator.clipboard.writeText(message).then(() => {
+        alert('ההודעה הועתקה!');
+      }).catch(() => {
+        alert('לא ניתן להעתיק את ההודעה.');
+      });
+    });
+  </script>
+</body>
+</html>
